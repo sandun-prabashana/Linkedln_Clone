@@ -4,7 +4,6 @@ import { View, Image, StyleSheet, SafeAreaView  ,Text, Dimensions, Button, Alert
 import ViewSlider from 'react-native-view-slider'
 import Join from './Join'
 import SignIn from './SignIn'
-import Tab from './Tab';
 import auth from '@react-native-firebase/auth';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 

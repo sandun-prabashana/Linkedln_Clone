@@ -5,10 +5,9 @@ import auth from '@react-native-firebase/auth';
 import renderIf from 'render-if';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import ABC from './ABC'
-import Tab from './Tab';
 // import SignIn from './SignIn';
 import { StackNavigator } from 'react-navigation';
+import detailScreen from './detailScreen';
 
 
 export default class Join extends Component {
@@ -40,44 +39,44 @@ export default class Join extends Component {
 
 
       registerUser = () =>{
-        // const passwordLength = this.state.password.length;
-        // if(passwordLength > 0){
-        // auth()
-        // .createUserWithEmailAndPassword(this.state.email, this.state.password)
-        // .then((createdUser) => {
-        //     createdUser.user.updateProfile({
-        //         displayName: this.state.fullname
-        //     })
+        const passwordLength = this.state.password.length;
+        if(passwordLength > 0){
+        auth()
+        .createUserWithEmailAndPassword(this.state.email, this.state.password)
+        .then((createdUser) => {
+            createdUser.user.updateProfile({
+                displayName: this.state.fullname
+            })
 
-        //     try{
-        //         var user= {
-        //           email:this.state.email,
-        //           password:this.state.password,
-        //           name:this.state.fullname,
-        //         }
-        //          AsyncStorage.setItem('userData',JSON.stringify(user))
-                this.props.navigation.navigate('TabScreen')
-    //           }catch(error){
-    //             console.log(error);
-    //           }
+            try{
+                var user= {
+                  email:this.state.email,
+                  password:this.state.password,
+                  name:this.state.fullname,
+                }
+                 AsyncStorage.setItem('userData',JSON.stringify(user))
+                this.props.navigation.navigate('detailScreen')
+              }catch(error){
+                console.log(error);
+              }
 
-    //       console.log('User account created & signed in!');
-    //       console.log(createdUser.user)
-    //     })
-    //     .catch(error => {
-    //       if (error.code === 'auth/email-already-in-use') {
-    //         console.log('That email address is already in use!');
-    //       }
+          console.log('User account created & signed in!');
+          console.log(createdUser.user)
+        })
+        .catch(error => {
+          if (error.code === 'auth/email-already-in-use') {
+            console.log('That email address is already in use!');
+          }
       
-    //       if (error.code === 'auth/invalid-email') {
-    //         console.log('That email address is invalid!');
-    //       }
+          if (error.code === 'auth/invalid-email') {
+            console.log('That email address is invalid!');
+          }
       
-    //       console.error(error);
-    //     });
-    // }else{
-    //     this.setState({ passwordError: true });
-    // }
+          console.error(error);
+        });
+    }else{
+        this.setState({ passwordError: true });
+    }
       }
 
 

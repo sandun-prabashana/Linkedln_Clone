@@ -1,34 +1,87 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, Dimensions, StatusBar, TouchableOpacity, TextInput, Image   } from 'react-native'
+import { Text, View, StyleSheet, Dimensions, StatusBar, TouchableOpacity, TextInput, Image, ActivityIndicator   } from 'react-native'
 import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/FontAwesome';
 import renderIf from 'render-if';
-
-
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 
 const { width, height } = Dimensions.get('window');
 
 
 export default class Post extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-          imagepath: null,
-          imagename:'',
-          imageurl:'',
-          image:false,
-          
-          
-        }
-      }
+  constructor(props) {
+    super(props);
+    this.state = {
+      imagepath: "file:///storage/emulated/0/Android/data/com.linkedln_clone_mint/files/Pictures/9a7896e6-11e9-461b-8377-adea1a3c80db.jpg",
+      imagename:'',
+      imageurl:'',
+      image:false,
+      name:'',
+      text:'',
+      spinner : false
+    }
+  }
+
+  AddPost= async()=> {
+
+       await firestore().collection('Post').add({
+          PostUrl: this.state.imageurl,
+          UserName: this.state.name,
+          PostText: this.state.text,
+          PostTime:firestore.Timestamp.fromDate(new Date()),
+          like:null,
+          comment:null,
+        })
+        .then(()=> {
+          this.setState({ text: '' });
+          this.setState({ image: false });
+          this.setState({ spinner: false });
+          alert('added success')
+          console.log('post added!');
+        })
+        .catch((error)=> {
+          console.log('something went wrong !!');
+        })
+
+  }
+
+
+  componentDidMount() {
+    this.getSavedStorage()
+  }
+
+  getSavedStorage=()=> {
+    try{
+        AsyncStorage.getItem('userData').then(value=>{
+            if (value!=null) {
+              let user=JSON.parse(value)
+                this.setState({ name: user.name});
+                console.log(this.state.name)
+            }else{
+              
+            }
+        })
+
+    }catch(error){
+     console.log(error);
+    }
+}
+
+
 
 
       CloseImage = () => {
         this.setState({ image: false });
         this.setState({ imagename: null });
         this.setState({ imagepath: null });
+      }
+
+      CloseScreen=()=>{
+        this.props.navigation.navigate('TabScreen')
       }
 
       getImageFromGallery =()=>{
@@ -50,31 +103,63 @@ export default class Post extends Component {
           });
         }
 
+        uploadImage = async ()=>{
+          this.setState({ spinner: true });
+
+          const filename= this.state.imagename + ".jpg"
+
+          const reference = storage().ref(`images/${filename}`);
+          await reference.putFile(this.state.imagepath);
+
+          const url = await storage().ref(`images/${filename}`).getDownloadURL();
+          console.log(url)
+          this.setState({
+              imageurl:url
+          })
+          console.log(this.state.imageurl)
+
+          this.AddPost()
+      }
+        
+        PostText = (e) => {
+          this.setState({ text: e });
+
+      }
 
 
     render() {
-
-
         return (
             <View style={styles.mainView}>
+
+        {
+          this.state.spinner &&
+          <ActivityIndicator style={styles.loading} color={'#0b66c3'} size="large"/>
+        }
                 <StatusBar barStyle="dark-content" backgroundColor="white"/>
                 <View style={styles.topView}>
                 
-                <Icon name="ios-close-outline" size={35} style={{marginLeft:10,marginTop:10}}/>
+                <Icon name="ios-close-outline" size={35} style={{marginLeft:10,marginTop:10}}
+                onPress={()=>this.CloseScreen()}
+                />
                 <Text style={styles.share}>
                     Share post
                 </Text>
 
-                <TouchableOpacity style={{position:'absolute',right:50,zIndex:98,bottom:30}}>
+                <TouchableOpacity style={{position:'absolute',right:50,zIndex:98,bottom:30}} onPress={()=>this.uploadImage()}>
                     <Text style={styles.post}>Post</Text>
                 </TouchableOpacity>
 
                 </View>
 
+                <Text style={styles.name}>{this.state.name}</Text>
+
+
                 <TextInput
                 style={styles.input}
+                value={this.state.text}
                 placeholder="What do you want to talk about?"
                 keyboardType="default"
+                onChange={(val) => this.PostText(val.nativeEvent.text)}
             />
             {renderIf(this.state.image)(
             <View style={{marginTop:10}}>
@@ -153,6 +238,18 @@ const styles = StyleSheet.create({
         zIndex:97,
         color:'white',
         right:30,
+      },
+      name:{
+        color:'black',
+        fontSize:20,
+        marginTop: 10,
+        alignSelf:'center'
+      },
+      loading:{
+        position:'absolute',
+        zIndex:99,
+        alignSelf:'center',
+        top:700,
       }
 
 })

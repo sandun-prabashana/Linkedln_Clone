@@ -11,6 +11,8 @@ import Join from './screens/Join'
 import Post from './screens/Post';
 import TabScreen from './screens/TabScreen';
 import SplashScreen from './screens/SplashScreen';
+import detailScreen from './screens/detailScreen';
+import a from './screens/a';
 
 
 const Stack = createNativeStackNavigator();
@@ -30,12 +32,13 @@ export default class App extends Component {
       return (
         <NavigationContainer independent={true}> 
           <Stack.Navigator>
-              <Stack.Screen options={{headerShown: false}} name="SplashScreen" component={SplashScreen} />
+              <Stack.Screen options={{headerShown: false}} name="SplashScreen" component={a} />
               <Stack.Screen options={{headerShown: false}} name="Join" component={Join} />
               <Stack.Screen options={{headerShown: false}} name="SignIn" component={SignIn} />
               <Stack.Screen options={{headerShown: false}} name="Post" component={Post} />
               <Stack.Screen options={{headerShown: false}} name="Home" component={Home} />
               <Stack.Screen options={{headerShown: false}} name="TabScreen" component={TabScreen} />
+              <Stack.Screen options={{headerShown: false}} name="detailScreen" component={detailScreen} />
               </Stack.Navigator>
         </NavigationContainer>
 
