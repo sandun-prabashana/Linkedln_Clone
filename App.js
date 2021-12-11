@@ -15,6 +15,7 @@ import detailScreen from './screens/detailScreen';
 import a from './screens/a';
 
 
+
 const Stack = createNativeStackNavigator();
 
 const Tabs = createBottomTabNavigator();
@@ -22,29 +23,27 @@ const Tabs = createBottomTabNavigator();
 export default class App extends Component {
 
 
-
-
-  
-
   render() {
 
     function FirstComponent() {
       return (
         <NavigationContainer independent={true}> 
           <Stack.Navigator>
-              <Stack.Screen options={{headerShown: false}} name="SplashScreen" component={a} />
+              <Stack.Screen options={{headerShown: false}} name="SplashScreen" component={Post} />
               <Stack.Screen options={{headerShown: false}} name="Join" component={Join} />
               <Stack.Screen options={{headerShown: false}} name="SignIn" component={SignIn} />
               <Stack.Screen options={{headerShown: false}} name="Post" component={Post} />
               <Stack.Screen options={{headerShown: false}} name="Home" component={Home} />
               <Stack.Screen options={{headerShown: false}} name="TabScreen" component={TabScreen} />
               <Stack.Screen options={{headerShown: false}} name="detailScreen" component={detailScreen} />
+              <Stack.Screen options={{headerShown: false}} name="a" component={a} />
               </Stack.Navigator>
         </NavigationContainer>
 
         
       );
     }
+
 
     return (
   
