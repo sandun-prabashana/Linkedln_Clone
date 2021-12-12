@@ -15,6 +15,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AnimatedSplash from 'react-native-animated-splash-screen';
 import TabScreen from './TabScreen';
 import Home from './Home';
+import messaging from '@react-native-firebase/messaging';
+
+
 
 const {width, height} = Dimensions.get('window');
 
@@ -27,7 +30,20 @@ export default class SplashScreen extends Component {
   }
 
   componentDidMount() {
+    this.requestUserPermission();
     this.getSavedStorage();
+    
+  }
+
+  requestUserPermission = async () =>{
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  
+    if (enabled) {
+      console.log('Authorization status:', authStatus);
+    }
   }
 
   getSavedStorage = () => {

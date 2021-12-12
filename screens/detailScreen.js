@@ -25,7 +25,7 @@ export default class detailScreen extends Component {
     super(props);
     this.state = {
       text: 'Add Profile Picture',
-      name: auth().currentUser.displayName,
+      name: '',
       location: '',
       imagepath: null,
       imagename: '',
@@ -40,12 +40,26 @@ export default class detailScreen extends Component {
       email: '',
       password: '',
       fullname: '',
+      oldemail:'a@gmail.com',
+      oldpassword:'123456'
     };
   }
 
+  userlogin =()=>{
+    auth()
+    .signInWithEmailAndPassword(this.state.oldemail,this.state.oldpassword)
+    .then((user)=>{
+        console.log(user);
+        console.log('user loged');
+    })
+    .catch(error =>{
+        console.log('login unsuccessfull ')
+    });
+}
+
   componentDidMount(){
-    
-    console.log(auth().currentUser.photoURL)
+    this.getSavedStorage()
+    this.userlogin();
   }
 
   getSavedStorage=()=> {
@@ -56,7 +70,9 @@ export default class detailScreen extends Component {
                 this.setState({ email: user.email });
                 this.setState({ password: user.password });
                 this.setState({ fullname: user.name });
-                this.registerUser()
+                console.log(this.state.email)
+                console.log(this.state.password)
+                console.log(this.state.fullname)
             }else{
               setTimeout(() => {
                 this.changeLoadingState();
@@ -116,45 +132,32 @@ export default class detailScreen extends Component {
     this.setState({
       imageurl: url,
     });
-    console.log(this.state.imageurl);
+    console.log("bye "+this.state.imageurl);
 
     this.AddPost();
+    this.registerUser();
   };
 
-  // SaveUserData = async () => {
-  //   await firestore()
-  //     .collection('User')
-  //     .add({
-  //       ProficeImage: this.state.imageurl,
-  //       UserName: this.state.name,
-  //       Location: this.state.text,
-  //     })
-  //     .then(() => {
-  //       console.log(' added!');
-  //       this.AddPost();
-  //     })
-  //     .catch(error => {
-  //       console.log('something went wrong !!');
-  //     });
-  // };
 
   AddPost = async () => {
     await firestore()
       .collection('Post')
       .add({
+        UserPic:this.state.imageurl,
         PostUrl: this.state.imageurl,
-        UserName: this.state.name,
+        UserName: this.state.fullname,
         PostText: this.state.text,
         PostTime: firestore.Timestamp.fromDate(new Date()),
-        like: null,
-        comment: null,
+        like: 0,
+        comment: 0,
       })
       .then(() => {
-        this.getSavedStorage()
+        
         this.setState({Location: ''});
         this.setState({spinner: false});
         this.props.navigation.navigate('TabScreen');
         console.log('post added!');
+        auth().signOut()
       })
       .catch(error => {
         console.log('something went wrong !!');
@@ -179,7 +182,6 @@ export default class detailScreen extends Component {
                   name:this.state.fullname,
                 }
                  AsyncStorage.setItem('userData',JSON.stringify(user))
-                this.props.navigation.navigate('detailScreen')
               }catch(error){
                 console.log(error);
               }

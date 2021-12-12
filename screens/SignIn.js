@@ -70,6 +70,7 @@ export default class SignIn extends Component {
             .then((user)=>{
                 console.log(user);
                 console.log('user loged');
+                this.props.navigation.navigate('TabScreen');
             })
             .catch(error =>{
                 console.log('login unsuccessfull ')

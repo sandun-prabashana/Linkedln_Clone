@@ -18,6 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
+
 const {width, height} = Dimensions.get('window');
 
 export default class Post extends Component {
@@ -31,6 +32,7 @@ export default class Post extends Component {
       name: auth().currentUser.displayName,
       text: '',
       spinner: false,
+      data:[]
     };
   }
 
@@ -38,12 +40,13 @@ export default class Post extends Component {
     await firestore()
       .collection('Post')
       .add({
+        UserPic:auth().currentUser.photoURL,
         PostUrl: this.state.imageurl,
         UserName: this.state.name,
         PostText: this.state.text,
         PostTime: firestore.Timestamp.fromDate(new Date()),
-        like: null,
-        comment: null,
+        like: 0,
+        comment: 0,
       })
       .then(() => {
         this.setState({text: ''});
@@ -190,8 +193,6 @@ const styles = StyleSheet.create({
   mainView: {
     backgroundColor: 'white',
     height: height,
-    // position:'absolute',
-    // top:33
   },
 
   topView: {
